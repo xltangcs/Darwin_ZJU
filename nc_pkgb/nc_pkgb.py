@@ -27,14 +27,14 @@ def nc_write_with_dir(core_x, core_y, addr, data, dir):
         src_y = 0
         dst_x = core_x
         dst_y = 0
-        dst_port = 1 # East
+        dst_port = 1 if core_x else 0# East
         route_id = core_y
     elif dir == 'N':
         src_x = 0
         src_y = core_y + 1
         dst_x = 0
         dst_y = core_y
-        dst_port = 4 # South
+        dst_port = 4 if core_y else 0# South
         route_id = core_x
 
     return nc_pkgb_write(dst_port, dst_x, dst_y, src_x, src_y, addr, data, route_id)
