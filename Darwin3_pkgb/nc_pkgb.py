@@ -104,25 +104,50 @@ def nc_pkgb_read(dst_core_x, dst_core_y, src_core_x, src_core_y, raddr, relay_id
     return nc_pkgb_basic_read(dst_port=dst_port, dst_x=dst_x, dst_y=dst_y, src_x=src_x, src_y=src_y, raddr=raddr, route_id=route_id, relay_id=relay_id, relay_link=relay_link, rd=rd)
 
 
-def nc_pkgb_write_riscv_reg(riscv_reg_id, wdata, wdata_sel, dir: NC_PKGB_Dir, relay_id = 0, relay_link = 0, rd = 0):
+def nc_pkgb_write_riscv_reg(dst_core_x, dst_core_y, src_core_x, src_core_y, riscv_reg_id, wdata, wdata_sel, relay_id = 0, relay_link = 0, rd = 0):
+    if src_core_x == -1: # west
+        route_id = src_core_y
+        if dst_core_x == 0:
+            if  src_core_y == dst_core_y:
+                dst_port = 0
+            elif src_core_y < dst_core_y:
+                dst_port = 4 #south
+            else:
+                dst_port = 2
+        else:
+            dst_port = 1
+        
+        dst_x = dst_core_x
+        dst_y = dst_core_y - src_core_y
+        src_x = abs(dst_core_x - src_core_x)
+        src_y = abs(dst_core_y - src_core_y) 
+    
+    elif src_core_y == -1:
+        route_id = src_core_x
+        if dst_core_x == 0:
+            if  src_core_x == dst_core_x:
+                dst_port = 0
+            elif src_core_x < dst_core_x:
+                dst_port = 3
+            else:
+                dst_port = 1
+        else:
+            dst_port = 4
 
-    dst_port = 0
-    route_id = 0
-
-    if dir == NC_PKGB_Dir.WEST:
-        src_x = 1
-        src_y = 0
-        dst_x = 0
-        dst_y = 0
-
-    elif dir == NC_PKGB_Dir.NORTH:
-        src_x = 0
-        src_y = 1
-        dst_x = 0
-        dst_y = 0
+        dst_x = dst_core_x - src_core_x
+        dst_y = dst_core_y
+        src_x = abs(dst_core_x - src_core_x)
+        src_y = abs(dst_core_y - src_core_y)
 
     else :
         return NotImplemented
+
+    # print("dst_x: ",dst_x)
+    # print("dst_y: ",dst_y)
+    # print("src_x: ",src_x)
+    # print("src_y: ",src_y)
+    # print("dst_port: ",dst_port)
+    # print("route_id: ",route_id)
 
 
     wpkg = []
@@ -138,21 +163,40 @@ def nc_pkgb_write_riscv_reg(riscv_reg_id, wdata, wdata_sel, dir: NC_PKGB_Dir, re
     
     return wpkg
 
-def nc_pkgb_read_riscv_reg(riscv_reg_id, wdata_sel, dir: NC_PKGB_Dir, relay_id = 0, relay_link = 0, rd = 0):
-    dst_port = 0
-    route_id = 0
+def nc_pkgb_read_riscv_reg(dst_core_x, dst_core_y, src_core_x, src_core_y, riscv_reg_id, wdata_sel, relay_id = 0, relay_link = 0, rd = 0):
+    if src_core_x == -1: # west
+        route_id = src_core_y
+        if dst_core_x == 0:
+            if  src_core_y == dst_core_y:
+                dst_port = 0
+            elif src_core_y < dst_core_y:
+                dst_port = 4 #south
+            else:
+                dst_port = 2
+        else:
+            dst_port = 1
+        
+        dst_x = dst_core_x
+        dst_y = dst_core_y - src_core_y
+        src_x = abs(dst_core_x - src_core_x)
+        src_y = abs(dst_core_y - src_core_y) 
+    
+    elif src_core_y == -1:
+        route_id = src_core_x
+        if dst_core_x == 0:
+            if  src_core_x == dst_core_x:
+                dst_port = 0
+            elif src_core_x < dst_core_x:
+                dst_port = 3
+            else:
+                dst_port = 1
+        else:
+            dst_port = 4
 
-    if dir == NC_PKGB_Dir.WEST:
-        src_x = 1
-        src_y = 0
-        dst_x = 0
-        dst_y = 0
-
-    elif dir == NC_PKGB_Dir.NORTH:
-        src_x = 0
-        src_y = 1
-        dst_x = 0
-        dst_y = 0
+        dst_x = dst_core_x - src_core_x
+        dst_y = dst_core_y
+        src_x = abs(dst_core_x - src_core_x)
+        src_y = abs(dst_core_y - src_core_y)
 
     else :
         return NotImplemented
@@ -161,7 +205,7 @@ def nc_pkgb_read_riscv_reg(riscv_reg_id, wdata_sel, dir: NC_PKGB_Dir, relay_id =
     wdata_sel = wdata_sel
     riscv_reg_id = riscv_reg_id
     
-    rpkg.append(nc_pkgb_head(route_id, NC_PKGB_Class.WRITE, dst_port, dst_x, dst_y, src_x, src_y))
+    rpkg.append(nc_pkgb_head(route_id, NC_PKGB_Class.READ, dst_port, dst_x, dst_y, src_x, src_y))
     rpkg.append(nc_pkgb_tail_read_riscv_reg(riscv_reg_id, wdata_sel, relay_id, relay_link, rd))
     
     return rpkg
