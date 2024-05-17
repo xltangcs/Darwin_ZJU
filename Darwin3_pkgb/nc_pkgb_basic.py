@@ -1,4 +1,5 @@
 from .nc_pkgb_utils import *
+
 '''
 nc_pkgb_head
 nc_pkgb_body0
@@ -10,7 +11,6 @@ nc_pkgb_tail_write
 nc_pkgb_tail_read
 nc_pkgb_tail_read_riscv_reg
 nc_pkgb_tail_read_riscv_sram
-
 '''
 
 
@@ -53,7 +53,7 @@ def nc_pkgb_head(
 
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_body0(waddr: int):
+def nc_pkgb_body0(waddr: int, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package body0.
 
@@ -67,10 +67,6 @@ def nc_pkgb_body0(waddr: int):
 
     flit_type = NC_PKGB_FlitType.BODY.value
 
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
-
     waddr = waddr 
 
     resv  = 0
@@ -79,7 +75,7 @@ def nc_pkgb_body0(waddr: int):
 
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_body0_riscv_reg(riscv_reg_id, reg_data_sel):
+def nc_pkgb_body0_riscv_reg(riscv_reg_id, reg_data_sel, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package body0.
 
@@ -92,10 +88,6 @@ def nc_pkgb_body0_riscv_reg(riscv_reg_id, reg_data_sel):
     """
 
     flit_type = NC_PKGB_FlitType.BODY.value
-
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
 
     reg_sram_sel = 0
     riscv_reg_id = riscv_reg_id
@@ -107,7 +99,7 @@ def nc_pkgb_body0_riscv_reg(riscv_reg_id, reg_data_sel):
 
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_body0_riscv_sram(sram_waddr, sram_high_or_low):
+def nc_pkgb_body0_riscv_sram(sram_waddr, sram_high_or_low, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package body0.
 
@@ -120,10 +112,6 @@ def nc_pkgb_body0_riscv_sram(sram_waddr, sram_high_or_low):
     """
 
     flit_type = NC_PKGB_FlitType.BODY.value
-
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
 
     reg_sram_sel = 1
     sram_waddr = sram_waddr
@@ -175,13 +163,12 @@ def nc_pkgb_body1_riscv(wdata1=0):
 
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_tail_write(wdata0=0):
+def nc_pkgb_tail_write(wdata0=0, relay_id = 0):
     """ 
     Assemble package tail for write.
 
     Args:
         wdata0: Lower 24 bits of data 
-        output_type: "hex" or "bin"
     
     Returns:
         flit
@@ -189,7 +176,6 @@ def nc_pkgb_tail_write(wdata0=0):
     """
 
     flit_type = NC_PKGB_FlitType.TAIL.value
-    relay_id = 0 
     wdata0 = wdata0
     resv = 0 
 
@@ -198,7 +184,7 @@ def nc_pkgb_tail_write(wdata0=0):
     return int(binary_str, 2) & 0xffffffff
 
 
-def nc_pkgb_tail_read(raddr=0):
+def nc_pkgb_tail_read(raddr=0, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package tail for read.
 
@@ -211,9 +197,7 @@ def nc_pkgb_tail_read(raddr=0):
     """
 
     flit_type = NC_PKGB_FlitType.TAIL.value
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
+
     raddr = raddr  
     resv = 0 
 
@@ -221,22 +205,18 @@ def nc_pkgb_tail_read(raddr=0):
     
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_tail_read_riscv_reg(reg_id, reg_data_sel):
+def nc_pkgb_tail_read_riscv_reg(reg_id, reg_data_sel, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package tail for read.
 
     Args:
         raddr: read address
-    
     Returns:
         flit
         
     """
 
-    flit_type = NC_PKGB_FlitType.TAIL.value
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
+    flit_type = NC_PKGB_FlitType.TAIL.value 
 
     reg_sram_sel = 0
     reg_id = reg_id  
@@ -248,7 +228,7 @@ def nc_pkgb_tail_read_riscv_reg(reg_id, reg_data_sel):
 
     return int(binary_str, 2) & 0xffffffff
 
-def nc_pkgb_tail_read_riscv_sram(sram_raddr, sram_high_or_low):
+def nc_pkgb_tail_read_riscv_sram(sram_raddr, sram_high_or_low, relay_id = 0, relay_link = 0, rd = 0):
     """ 
     Assemble package tail for read.
 
@@ -261,9 +241,6 @@ def nc_pkgb_tail_read_riscv_sram(sram_raddr, sram_high_or_low):
     """
 
     flit_type = NC_PKGB_FlitType.TAIL.value
-    relay_id = 0 
-    relay_link = 0 
-    rd = 0 
 
     reg_sram_sel = 1
     sram_raddr = sram_raddr  
@@ -274,3 +251,20 @@ def nc_pkgb_tail_read_riscv_sram(sram_raddr, sram_high_or_low):
     binary_str = "{:02b}{:03b}{:06b}{:01b}{:01b}{:015b}{:01b}{:03b}\n".format(flit_type, relay_id, relay_link, rd, reg_sram_sel, sram_raddr, sram_high_or_low, resv) 
 
     return int(binary_str, 2) & 0xffffffff
+
+
+def create_relay_rule (LCF, dst_x=0, dst_y=0, RF=0, RY=0, src_x = 0, src_y = 0) :
+
+    signed = 0x10
+    dst_x = dst_x if dst_x >= 0 else abs(dst_x) | signed
+    dst_y = dst_y if dst_y > 0 else abs(dst_y) | signed
+
+    RF = RF
+    RY = RY
+    src_x = src_x if src_x >= 0 else abs(src_x) | signed
+    src_y = src_y if src_y >= 0 else abs(src_y) | signed
+
+    binary_str = "{:01b}{:05b}{:05b}{:01b}{:04b}{:05b}{:05b}\n".format(LCF, dst_x, dst_y, RF, RY, src_x, src_y) 
+
+    return int(binary_str, 2) & 0x3ffffff
+

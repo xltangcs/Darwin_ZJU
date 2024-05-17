@@ -1,7 +1,15 @@
 import sys
 from struct import pack
+
 def gen_bin(hex_in):
     #print(hex_in)
+    
+    with open (hex_in, 'a') as f:
+        datas = ['c0000001', 'c0000000']
+        for data in datas:
+            data = int(data, 16)
+            f.write("".join(f"{data:08x}") + "\n")
+
     bin_out = hex_in.replace(".txt","").replace(".hex","") + ".bin"
     with open(hex_in,"r") as hex_f:
         bin_f = open(bin_out, "wb")
